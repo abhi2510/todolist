@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+{% load staticfiles %}
+<html>
+<head>
+	<title>Create task</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css">
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  	<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+  	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js"></script>
+  	<link rel="shortcut icon" type="image/x-icon" href="{% static 'images/chat.jpg' %}" />
+
+  	<link rel="stylesheet" type="text/css" href="{% static 'css/createtask.css' %}">
+
+</head>
+<style type="text/css">
+	
+</style>
+<body>
+	{% include "create_task_header.html" %}
+
+	<div class="container-fluid">
+		<p id="tasklist"><b>TASK LIST</b></p>
+		<table class="table table-bordered">
+			<thead>
+				<tr>
+					<th>#</th>
+			        <th>Task Name</th>
+			        <th>Current Status</th>
+			        <th>Task Started</th>
+			        <th>Changed Status</th>
+			        <th>Estimate hours</th>
+			        <th>Completed hours</th>
+			        <th>Re-Schedule</th>
+			    </tr>
+			</thead>
+			<tbody>
+				{% if tasklist %}
+					{% for taskobj in tasklist%}
+					<tr>
+						<td>{{ forloop.counter }}</td>
+						<td id='name'>{{ taskobj.child_task_name }}</td>
+						<td>{{ taskobj.status }}</td>
+						<td>{{ taskobj.created_date }}</td>
+						<td>
+							<div>
+								{% if taskobj.status != 'Completed' %}
+								<button type="button" class="btn btn-success btn-sm" id="selectstatus" onclick="changestatus('{{ taskobj.childtask_id }}','Completed')"">Completed</button>
+								{% endif %}
+
+								{% if taskobj.status != 'Remove' %}
+								<button type="button" class="btn btn-danger btn-sm" id="selectstatus" onclick="changestatus('{{ taskobj.childtask_id }}','Remove')"">Remove</button>
+								{% endif %}
+
+								<!-- {% if taskobj.status != 'Pending' %}
+								<button type="button" class="btn btn-primary btn-sm" id="selectstatus" onclick="changestatus('{{ taskobj.childtask_id }}','Pending')"">Pending</button>
+								{% endif %} -->
+							</div>
+						</td>
+						{% if taskobj.estimate_days %}
+							<td>{{ taskobj.estimate_days}} days,{{taskobj.estimate_hrs }} hrs</td>
+						{% else %}	
+							<td>{{ taskobj.estimate_hrs }} hrs</td>
+						{% endif %}	
+						
+						{% if taskobj.completed_days %}
+							<td>{{ taskobj.completed_days}} days,{{taskobj.completed_hrs }} hrs</td>
+						{% elif taskobj.completed_hrs %}	
+							<td>{{ taskobj.completed_hrs }} hrs</td>
+						{% elif taskobj.completed_min %}
+							<td>{{ taskobj.completed_min }} min</td>
+						{% elif taskobj.completed_sec %}
+							<td>{{ taskobj.completed_sec }} sec</td>
+						{% else %}
+							<td>--</td>			
+						{% endif %}	
+						<td>{% include "reschedule.html" %}</td>
+					</tr>
+					{% endfor %}
+				{% else %}
+					<tr>
+						<td>--</td>
+						<td>--</td>
+						<td>--</td>
+						<td>--</td>
+						<td>--</td>
+						<td>--</td>
+						<td>--</td>
+						<td>--</td>
+					</tr>
+				{% endif %}		
+			</tbody>
+		</table>
+	</div>
+	<script type="text/javascript">
+	//--------------create task api call-------------------------------------------
+		$(document).ready(function(){
+			$("#createtask").click(function(){
+				var taskname = document.getElementById('taskname').value;
+				var schedule_date = $("#datetime").val();
+                
+				var authcode = '{{ authcode }}';
+				var requestdata = {}
+					requestdata['userid'] = {{ userid }};
+					requestdata['authcode']= authcode;
+					requestdata['taskname']= taskname;
+					requestdata['schedule_date']= schedule_date;
+					requestdata['foldername']= 'task1';
+				console.log(requestdata);	
+				var jsonrequest = JSON.stringify(requestdata);
+				$.ajax({
+					type:'POST',
+					url:'http://127.0.0.1:8000/api/createtask',
+					data:{createtask:jsonrequest},
+					dataType:'json',
+					success:function(response){
+						console.log(response)
+						if(response.Status == 'Success'){
+							window.location.replace('http://127.0.0.1:8000/web/createtask/'+{{ userid }})
+						}
+						else{
+							alert(response.Message);
+						}
+					}
+				});	
+			});
+		});
+
+	//-----------------------------------------------------------------------------------------------------------
+	//-------------------------------------------signout api call -----------------------------------------------------
+
+		$(document).ready(function(){
+			$("#signout").click(function(){
+				window.location.replace('http://127.0.0.1:8000/web/logout')
+			});
+		});
+	//----------------------------------------------------------------------------------------------------------------
+	//------------------------ change status api call -----------------------------------------------------------------	
+
+		function changestatus(taskid,statusvalue){
+			var msg = 'Are You Sure to Update the Task Status As-'+statusvalue+ '?';
+			if (confirm(msg)){
+				var authcode = '{{ authcode }}';
+				var requestdata = {};
+				requestdata['userid'] ={{ userid }};
+				requestdata['authcode'] = authcode;
+				requestdata['taskid'] = taskid;
+				requestdata['updatestatus'] = statusvalue;
+
+				var json_upload = "update=" + JSON.stringify(requestdata);
+				var xhttp = new XMLHttpRequest();
+				xhttp.onreadystatechange = function() {
+					if (this.readyState == 4 && this.status == 200) {
+						console.log(xhttp.responseText)
+						location.replace('http://127.0.0.1:8000/web/createtask/'+{{ userid }})
+					}
+				};	
+				xhttp.open("POST", "http://127.0.0.1:8000/api/update");
+				xhttp.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+				xhttp.send(json_upload);
+			}
+		}
+
+	//------------------------------------------------------------------------------------------------------------
+	</script>
+</body>
+</html>

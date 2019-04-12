@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+{% load staticfiles %}
+<html>
+<head>
+	<title>Todo List</title>
+	<link rel="shortcut icon" type="image/x-icon" href="{% static 'images/chat.jpg' %}" />
+	<link rel="stylesheet" type="text/css" href="{% static 'css/login.css' %}">
+	<style type="text/css">
+		
+
+	</style>
+</head>
+<body>
+	<div class="form">
+		<form>
+			<div class="field-wrap">
+				<label>Email*</label>
+				<input type="email" name="email" id="email" placeholder="Email" required>
+			</div>
+			<div class="field-wrap">
+				<label>Password*</label>
+				<input type="password" name="password" id="password" placeholder="Password" required>
+			</div>
+		</form>
+		<button id='loginapi' class="button">Login</button>
+		<div><p>Create Account? <a href="http://127.0.0.1:8000/web/signup"><button id="Signup">Signup</button></a></p></div>
+	</div>	
+</body>
+<script src="http://code.jquery.com/jquery-1.11.3.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+
+<script type="text/javascript">
+	
+	$(document).ready(function(){
+		$("#loginapi").click(function(){
+			var email = document.getElementById('email').value;
+			var password = document.getElementById('password').value;
+			var requestdata = {};
+		      requestdata['email'] = email;
+		      requestdata['password'] = password;
+			var jsonrequest = JSON.stringify(requestdata);
+			$.ajax({
+				type:'POST',
+				url:'http://127.0.0.1:8000/api/login',
+				data: {login:jsonrequest},
+				dataType: "json",
+				success: function(response){
+					console.log(response);
+					if(response.Status=='Success')
+					{
+						//console.log(data.userid);
+		            	window.location.replace('http://127.0.0.1:8000/web/createtask/'+response.userid)
+					}
+		          	else
+		          	{
+		            	alert(response.Message);
+		          	}
+				}
+			});
+			
+		});
+	});	
+</script>
+</html>

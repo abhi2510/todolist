@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+{% load staticfiles %}
+<html>
+<head>
+  <title>Todo List</title>
+  <link rel="shortcut icon" type="image/x-icon" href="{% static 'images/chat.jpg' %}" />
+    <link rel="stylesheet" type="text/css" href="{% static 'css/signup.css' %}">
+  <style type="text/css">
+    
+
+  </style>
+</head>
+<body>
+  <div class="form">
+    <form>
+      <div class="field-wrap">
+        <label>Username*</label>
+        <input type="text" name="username" id="username" placeholder="Username" required>
+      </div>
+      <div class="field-wrap">
+        <label>Email*</label>
+        <input type="email" name="email" id="email" placeholder="Email" required>
+      </div>
+      <div class="field-wrap">
+        <label>Password*</label>
+        <input type="password" name="password" id="password" placeholder="Password" required>
+      </div>
+      <div class="field-wrap">
+        <label>Number*</label>
+        <input type="tel" name="number" id="number" placeholder="Mobile Number" required>
+      </div>
+    </form>
+    <button id='signupapi' class="button">Signup</button>
+    <div><p>Already Registered? <a href="http://127.0.0.1:8000/web/"><button id="login">Login</button></a></p></div>
+  </div>  
+</body>
+
+<script src="http://code.jquery.com/jquery-1.11.3.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<script type="text/javascript">
+  
+  $(document).ready(function(){
+    $("#signupapi").click(function(){
+      var username = document.getElementById("username").value;
+      var email = document.getElementById('email').value;
+      var password = document.getElementById('password').value;
+      var number = document.getElementById('number').value;
+
+      var requestdata = {};
+        requestdata['usename'] = username;
+        requestdata['email'] = email;
+        requestdata['password'] = password;
+        requestdata['number'] = number;
+
+      
+      var jsonrequest = JSON.stringify(requestdata);
+      $.ajax({
+        type:'POST',
+        url:'http://127.0.0.1:8000/api/signup',
+        data: {signup:jsonrequest},
+        dataType: "json",
+        success: function(response){
+          console.log(response);
+          if(response.Status=='Success'){
+              window.location.replace('http://127.0.0.1:8000/web/createtask/'+response.userid)
+          }
+          else{
+             alert(response.Message);
+          }
+        }
+      });
+      
+    });
+  }); 
+</script>
+</html>

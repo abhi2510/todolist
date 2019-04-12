@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta name="viewport" content="width=device-width, initial-scale=1"> 
+	<style type="text/css">
+	.input-group-addon {
+		cursor: pointer;
+	}
+	.input-group-addon:hover {
+	  background-color: #bbb;
+	}
+	</style>
+    
+</head>
+<body>
+	<div class='input-group date'>
+<!-- 		<input type='text' class="form-control" id="reschedule" placeholder="Scheduled" size="2"/> -->
+		<!-- <span class="input-group-addon"  >
+			<span>
+				<span id="rescheduledBtn">Reschedule</span>
+			</span>
+		</span>	 -->
+		{% if taskobj.status == 'Pending' %}
+			<button type="button" class="btn btn-sm btn-primary" onclick="reschedule('{{ taskobj.childtask_id }}')">Reschedule</button>
+		{% else %}
+			<button type="button" class="btn btn-sm btn-primary" disabled onclick="reschedule('{{ taskobj.childtask_id }}')">Reschedule</button>
+		{% endif %}	
+						
+	</div>
+</body>
+	<script type="text/javascript">
+		function reschedule(taskid) {
+			var msg ='You added 2 more hours in Estimated Time';
+			if(confirm(msg)){
+				//alert(taskid)
+				var authcode = '{{ authcode }}'
+				var requestdata ={}
+				requestdata['userid'] = {{ userid }}
+				requestdata['authcode'] = authcode
+				requestdata['taskid'] = taskid
+
+				var json_upload = "reschedule=" + JSON.stringify(requestdata);
+				var xhttp = new XMLHttpRequest();
+				xhttp.onreadystatechange = function() {
+					if (this.readyState == 4 && this.status == 200) {
+						console.log(xhttp.responseText)
+						location.replace('http://127.0.0.1:8000/web/createtask/'+{{ userid }})
+					}
+				};
+				xhttp.open("POST", "http://127.0.0.1:8000/api/reschedule");
+				xhttp.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+				xhttp.send(json_upload);	
+			}
+		}
+	</script>
+	
+</html>

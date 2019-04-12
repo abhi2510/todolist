@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+{% load staticfiles %}
+<html>
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js"></script>
+
+    <link rel="stylesheet" type="text/css" href="{% static 'css/jquery.datetimepicker.min.css' %}">
+    <script type="text/javascript" src="{% static 'js/jquery.datetimepicker.full.js' %}"></script>
+</head>
+<body>
+  <div id="myDIV" class="header">
+    <h2 style="margin:5px">Create A Task</h2>
+      <div class="container">
+       <div class="row">
+        <div class="col-sm-4">
+          <input type="text" id="taskname" placeholder="Enter Task Name" class="form-control" required/>
+        </div>
+        <div class="col-sm-4">
+          <div class="form-group">
+                    <div class='input-group date'>
+                        <input type='text' class="form-control" id="datetime" placeholder="Scheduled Task" required/>
+                        <span class="input-group-addon">
+                            <span class="glyphicon glyphicon-calendar"></span>
+                        </span>
+                    </div>
+                </div>
+        </div>
+        <div class="col-sm-2">
+          <span class="addBtn" id="createtask">Add</span>
+        </div>
+        <div class="col-sm-2">
+           <button type="button" class="btn btn-primary btn-sm" id="signout">
+              <span class="glyphicon glyphicon-off"></span> Signout
+            </button> 
+        </div>
+      </div>
+    </div>  
+  </div>
+</body>
+  <script type="text/javascript">
+            $(document).ready(function(){
+                $("#datetime").datetimepicker({format: 'Y-m-d H:i:s'});
+            });
+        </script>
+</html>
